@@ -1,0 +1,2 @@
+my_kinect
+-DCATKIN_DEVEL_PREFIX=/home/bohun/nao/ros/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/bohun/nao/ros/catkin_ws/install

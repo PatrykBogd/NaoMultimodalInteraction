@@ -1,0 +1,8 @@
+prefix=/home/bohun/nao/ros/catkin_ws/install
+
+Name: my_kinnect
+Description: Description of my_kinnect
+Version: 0.0.1
+Cflags: -I/home/bohun/nao/ros/catkin_ws/install/include
+Libs: -L/home/bohun/nao/ros/catkin_ws/install/lib 
+Requires: message_runtime
