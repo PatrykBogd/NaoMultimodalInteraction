@@ -1,0 +1,83 @@
+#! /usr/bin/env python
+import rospy
+import tf
+import math
+import almath
+from naoqi import ALProxy
+from std_msgs.msg import Header
+from geometry_msgs.msg import Vector3
+from geometry_msgs.msg import Quaternion
+from my_kinnect.msg import SkeletonCoords
+
+class Tracker():
+
+    def __init__(self):
+	rospy.init_node('control_by_keys', anonymous=True)
+	self.myFrame = 'control'
+	self.r = rospy.Rate(1)		#rospy.Rate(1) = 1Hz
+
+#Nao init and connect
+	self.nao_init()
+	rospy.loginfo("\n\nYou can control nao by keys!\n\n")
+	
+    
+    def toRAD(self,angle):
+	return angle*almath.TO_RAD
+
+    def nao_init(self):
+	#NAO CONNECT AND INIT
+	#PORT AND IP NAO ROBOT
+	#ip = rospy.get_param('~ip', '127.0.0.1')
+	#port = int(rospy.get_param('~port', '45404'))
+	ip = rospy.get_param('~ip', '10.104.16.53')
+	port = int(rospy.get_param('~port', '9559'))
+
+	self.al = ALProxy("ALAutonomousLife", ip, port)
+	self.postureProxy = ALProxy("ALRobotPosture", ip, port)
+	self.tts = ALProxy("ALTextToSpeech", ip, port)
+	self.motionProxy = ALProxy("ALMotion", ip, port)
+	self.al.setState("disabled")
+	self.postureProxy.goToPosture("StandInit", 0.5)	
+
+    def getch(self):   # define non-Windows version
+        import sys, tty, termios
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(sys.stdin.fileno())
+            ch = sys.stdin.read(1)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        return ch
+
+
+    def control(self):
+	rospy.loginfo("\nPress key W,A,S,D to control nao. Press 'c' to close application!\n\n")
+	key_input = 'o'
+	tmp_key = 'o'
+
+	while(key_input != 'c'):
+		while(True):
+			tmp_key = self.getch()
+			if (tmp_key == 'a' or tmp_key == 's' or tmp_key == 'd' or tmp_key == 'w' or tmp_key == 'c'):
+				key_input = tmp_key
+				break
+		if(key_input == 'w'):
+			self.motionProxy.moveTo(0.1,0.0,0.0)
+		if(key_input == 'a'):
+			self.motionProxy.moveTo(0.0,0.0,self.toRAD(-90))
+		if(key_input == 's'):
+			self.motionProxy.moveTo(-0.1,0.0,0.0)
+		if(key_input == 'd'):
+			self.motionProxy.moveTo(0.0,0.0,self.toRAD(90))
+		self.r.sleep()
+	rospy.loginfo("\n\nExit Application!\n\n")
+
+
+if __name__ == '__main__':
+    try:
+        tr = Tracker()
+	tr.control()
+        rospy.spin()
+    except rospy.ROSInterruptException:
+        pass
