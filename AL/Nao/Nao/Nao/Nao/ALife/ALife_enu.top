@@ -1,0 +1,25 @@
+topic: ~ALife()
+language: enu
+
+u:(left)
+
+Left.$Left=1
+
+u:(right)
+
+Right.$Right=1
+
+u:(stop)
+
+Stop.$Stop=1
+
+u:(me)
+
+Im looking your face.$Look=1
+
+u:(turn)
+Left or Right
+    u1: (right)
+    Turn right$TR=1
+    u1: (left)
+    Turn left$TL=1
